@@ -34,3 +34,8 @@
 .FormField textarea {
   resize: none;
 }
+.FormFieldError{
+  color: salmon;
+  font-size: 13px;
+  padding-left: 9px;
+}
