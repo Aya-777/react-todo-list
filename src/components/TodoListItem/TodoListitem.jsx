@@ -3,11 +3,14 @@ import { PRIORITIES, PRIORITY_DEFAULT } from '../../constants/priorities';
 import styles from './TodoListItem.module.css';
 import { TodoFormFields } from '../TodoFormFields/TodoFormFields';
 import { useForm } from 'react-hook-form';
+import { getTodoSchema} from "../../schemas/todo";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 export function TodolistItem({ todo, onUpdate, onDelete }) {
 
   const [isEditing, setIsEditing] = useState(false);
   const {register, handleSubmit, formState:{errors}} = useForm({
+    resolver : yupResolver(getTodoSchema()),
     defaultValues: todo
   });
 

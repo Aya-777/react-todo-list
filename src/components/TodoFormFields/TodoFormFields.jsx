@@ -17,22 +17,10 @@ export function TodoFormFields({
           autoComplete="off"
           aria-invalid={!!errors.name}
           defaultValue={todo.name}
-          {...register("name", {
-            required: "Name is required",
-            minLength: {
-              value: 3,
-              message: "Name should have min length of 3",
-            },
-            maxLength: {
-              value: 50,
-              message: "Name should have max length of 50",
-            },
-          })}
+          {...register("name")}
         />
         {!!errors.name && (
-          <span className={styles.FormFieldError}>
-            {errors.name.message}
-          </span>
+          <span className={styles.FormFieldError}>{errors.name.message}</span>
         )}
       </div>
 
@@ -45,12 +33,7 @@ export function TodoFormFields({
               rows="3"
               aria-invalid={!!errors.description}
               defaultValue={todo.description}
-              {...register("description", {
-                maxLength: {
-                  value: 200,
-                  message: "Description should have max length of 200",
-                },
-              })}
+              {...register("description")}
             />
             {!!errors.description && (
               <span className={styles.FormFieldError}>
@@ -67,12 +50,12 @@ export function TodoFormFields({
                 id="deadline"
                 aria-invalid={!!errors.deadline}
                 defaultValue={todo.deadline}
-                {...register("deadline", {
-                  min: !todo.id && {
-                    value: new Date().toISOString().split("T")[0],
-                    message: "Deadline can't be date in the past",
-                  },
-                })}
+                // {...register("deadline", {
+                //   min: !todo.id && {
+                //     value: new Date().toISOString().split("T")[0],
+                //     message: "Deadline can't be date in the past",
+                //   },
+                // })}
               />
               {!!errors.deadline && (
                 <span className={styles.FormFieldError}>
@@ -87,11 +70,7 @@ export function TodoFormFields({
                 defaultValue={todo.priority ?? PRIORITY_DEFAULT}
                 id="priority"
                 aria-invalid={!!errors.priority}
-                {...register("priority", {
-                  validate: (value) =>
-                    Object.keys(PRIORITIES).includes(value) ||
-                    "Priority is not valid value",
-                })}
+                {...register("priority")}
               >
                 {Object.entries(PRIORITIES).map(([key, { label }]) => (
                   <option key={key} value={key}>
