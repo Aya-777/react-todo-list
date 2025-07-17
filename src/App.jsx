@@ -7,43 +7,49 @@ import { TodoFilters } from "./components/TodoFilters/TodoFilters";
 function App() {
   const [todos, setTodos] = useState([]);
   const [filters, setFilters] = useState({ completed: "", priority: "" });
+  useEffect(() => { fetchTodos(); }, [filters]);
 
   function fetchTodos() {
-    fetch(`${import.meta.env.VITE_MOCKAPI_BASE_URL}/todos`, {
+    const searchParams = new URLSearchParams(filters).toString();
+    fetch(`${import.meta.env.VITE_MOCKAPI_BASE_URL}/todos?${searchParams}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
     })
-      .then((res) => !!res.ok && res.json())
+      .then((res) => {
+        if(res.ok) return res.json();
+        if(res.status === 404) return [];
+      })
       .then(setTodos);
   }
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
 
   function handleCreate(newTodo) {
-    setTodos((prevTodos) => [
-      ...prevTodos,
-      { id: `${prevTodos.length + 1}`, ...newTodo },
-    ]);
+    fetch(`${import.meta.env.VITE_MOCKAPI_BASE_URL}/todos`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(newTodo)
+    })
+      .then((res) => !!res.ok && res.json())
+      .then(fetchTodos);
   }
 
   function handleUpdate(id, newTodo) {
-    setTodos((prevTodos) => prevTodos.map((todo) => todo.id === id ? newTodo : todo));
+    fetch(`${import.meta.env.VITE_MOCKAPI_BASE_URL}/todos/${id}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(newTodo)
+    })
+      .then((res) => !!res.ok && res.json())
+      .then(fetchTodos);
   }
 
   function handleDelete(id) {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
-  }
-
-  function filterTodos(todo) {
-    const { completed, priority } = filters;
-
-    return (
-      (completed === "" || JSON.stringify(todo.completed) === completed) &&
-      (priority === "" || todo.priority === priority)
-    );
-  }
+      fetch(`${import.meta.env.VITE_MOCKAPI_BASE_URL}/todos/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => !!res.ok && res.json())
+      .then(fetchTodos);  
+    }
 
   return (
     <div className={styles.App}>
@@ -56,7 +62,7 @@ function App() {
         <TodoForm onCreate={handleCreate} />
         <TodoFilters onFilter={setFilters} />
         <TodoList
-          todos={todos.filter(filterTodos)}
+          todos={todos}
           onUpdate={handleUpdate}
           onDelete={handleDelete} />
       </div>
