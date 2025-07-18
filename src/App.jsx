@@ -3,6 +3,7 @@ import styles from "./App.module.css";
 import { TodoList } from "./components/TodoList/TodoList";
 import { TodoFilters } from "./components/TodoFilters/TodoFilters";
 import { useTodos } from "./hooks/todo";
+import { Alert } from "./components/Alert/Alert";
 
 function App() {
   const todos = useTodos();
@@ -14,6 +15,9 @@ function App() {
       </header>
 
       <div className={styles.AppContainer}>
+        {!!todos.error.message && (
+          <Alert onClear={todos.error.clear}>{todos.error.message}</Alert>
+        )}
         <TodoForm onCreate={todos.create} />
         <TodoFilters onFilter={todos.filter} />
         <TodoList
