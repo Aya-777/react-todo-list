@@ -1,7 +1,7 @@
 import styles from './Alert.module.css';
 
 export function Alert({ children, onClear }) {
-  return(
+  return (
     <div className={styles.Alert}>
       {children}
       <span onClick={onClear}>x</span>
