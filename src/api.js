@@ -1,43 +1,33 @@
-const BASE_URL = import.meta.env.VITE_MOCKAPI_BASE_URL;
+import axios from "axios";
+
+const http = axios.create({
+  baseURL: import.meta.env.VITE_MOCKAPI_BASE_URL,
+  headers: { "content-type": "application/json" },
+  timeout: 5000,
+});
+
+http.interceptors.response.use(({data}) => data);
 
 export const api = {
   todos: {
     async getAll(params = {}) {
-      const searchParams = new URLSearchParams(params).toString();
-      
-      return fetch(`${BASE_URL}/todos?${searchParams}`, {
-        method: "GET",
-        headers: { "content-type": "application/json" },
-      })
-        .then((res) => {
-          if(res.ok) return res.json();
-          if(res.status === 404) return [];
-        })
-      },
+      return http
+        .get("todos", { params })
+        .catch((error) => 
+          error?.response.status === 404 ? [] : Promise.reject(error)
+        );
+    },
 
     async create(data) {
-      return fetch(`${BASE_URL}/todos`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(newTodo)
-    })
-      .then((res) => !!res.ok && res.json())
+      return http.post("todos", data);
     },
 
     async update(id, data) {
-      return fetch(`${BASE_URL}/todos/${id}`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((res) => !!res.ok && res.json())
+      return http.put(`todos/${id}`, data);
     },
 
     async delete(id) {
-      return fetch(`${BASE_URL}/todos/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => !!res.ok && res.json())
+      return http.delete(`todos/${id}`);
     },
   },
 }
